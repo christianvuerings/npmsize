@@ -1,0 +1,12 @@
+{
+  "name": "npmsize",
+  "version": "0.0.1",
+  "description": "Npm package size over time",
+  "main": "server.js",
+  "repository": "git@github.com:npmsize/npmsize.git",
+  "author": "Christian Vuerings <vueringschristian@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.15.3"
+  }
+}
