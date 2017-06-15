@@ -2,11 +2,18 @@
   "name": "npmsize",
   "version": "0.0.1",
   "description": "Npm package size over time",
-  "main": "server.js",
+  "main": "index.js",
   "repository": "git@github.com:npmsize/npmsize.git",
   "author": "Christian Vuerings <vueringschristian@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "express": "^4.15.3"
+  },
+	"scripts": {
+    "start": "node index.js",
+		  "heroku-postbuild": "cd client && yarn --production=false && yarn run build"
+  },
+  "devDependencies": {
+    "prettier": "^1.4.4"
   }
 }
