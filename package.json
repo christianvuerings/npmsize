@@ -7,11 +7,13 @@
   "author": "Christian Vuerings <vueringschristian@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.15.3"
+    "axios": "^0.16.2",
+    "express": "^4.15.3",
+    "request": "^2.81.0"
   },
-	"scripts": {
+  "scripts": {
     "start": "node index.js",
-		  "heroku-postbuild": "cd client && yarn --production=false && yarn run build"
+    "heroku-postbuild": "cd client && yarn --production=false && yarn run build"
   },
   "devDependencies": {
     "prettier": "^1.4.4"

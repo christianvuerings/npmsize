@@ -27,18 +27,19 @@ html, body, #root {
 }
 
 .container {
-	background-color: #212631;
+	background-color: #fff;
 	height: 100%;
+	margin: 0 auto;
+	max-width: 900px;
 	width: 100%;
 }
 
 header h1 {
-	color: #fff;
+	color: #212631;
 	margin: 0;
-	font-size: 80px;
-	padding: 50px 20px 100px;
+	font-size: 40px;
+	padding: 50px 20px 70px;
 	text-align: center;
-	/*text-shadow: 0 0 0 2px #212631;*/
 	width: 100%;
 }
 
@@ -48,14 +49,18 @@ header h1 {
 }
 .searchInput {
 	border: 2px solid #212631;
-	border-radius: 50px;
+	border-radius: 10px;
 	font-size: 25px;
 	margin: 0 10px;
 	max-width: 600px;
-	padding: 10px 20px;
+	padding: 5px 20px;
 	width: 100%;
 }
 .searchInput:focus {
-	box-shadow: 0 0 0 2px #fff;
+	box-shadow: 0 0 0 2px #fff, 0 0 0 4px #666;
 	outline: none;
+}
+
+.content {
+	margin-top: 30px;
 }
