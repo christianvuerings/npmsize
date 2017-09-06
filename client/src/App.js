@@ -1,6 +1,20 @@
 import React, { Component } from "react";
 import LineChart from "./js/LineChart";
-import "./App.css";
+
+class File extends Component {
+	render() {
+		const { path, loading, data } = this.props;
+
+		return (
+			<div className="fileContainer">
+				<h2>{path}</h2>
+				{loading && <div>Loading</div>}
+				{!loading && data && <LineChart data={data} />}
+			</div>
+
+		)
+	}
+};
 
 class App extends Component {
 	// Initialize state
@@ -8,40 +22,70 @@ class App extends Component {
 
 	// Fetch passwords after first mount
 	componentDidMount() {
-		this.getRepo();
+		this.getFiles();
 	}
 
-	getRepo = () => {
+	getFileInfo = (repo, path) => {
+		fetch("/api/repo/" + repo + "/path/?path=" + encodeURIComponent(path))
+			.then(res => res.json())
+			.then(res => {
+				this.setState({
+					files: {
+					  ...this.state.files,
+					  [path]: {
+						  loading: false,
+						  data: res
+					  },
+					},
+				  });
+			});
+	}
+
+	getFilesInfo = (repo, paths) => {
+		paths.forEach(path => this.getFileInfo(repo, path));
+	}
+
+	getFiles = () => {
 		const { searchInput } = this.state;
 		if (searchInput) {
-			fetch("/api/repo/" + searchInput)
+			fetch("/api/repo/" + searchInput + "/files")
 				.then(res => res.json())
 				.then(res => {
 					console.log(res);
+
+					this.getFilesInfo(searchInput, res.lastVersion);
+
+					const files = {};
+
+					res.lastVersion.forEach((path) => {
+						files[path] = {
+							loading: true,
+							data: {}
+						}
+					});
 					this.setState({
-						loading: false,
-						repo: res
+						loadingFiles: false,
+						files: files
 					})
 				});
 		} else {
 			this.setState({
-				loading: false,
-				repo: {}
+				loadingFiles: false,
+				files: {}
 			});
 		}
-
 	}
 
 	handleChange = (event) => {
 		const value = event.target.value;
 		this.setState({
-			loading: true,
+			loadingFiles: true,
 			searchInput: value
-		}, this.getRepo);
+		}, this.getFiles);
 	}
 
 	render() {
-		const { loading, repo, searchInput } = this.state;
+		const { loadingFiles, files, searchInput } = this.state;
 
 		return (
 			<div className="container">
@@ -62,9 +106,12 @@ class App extends Component {
 					/>
 				</div>
 				<div className="content">
-					{loading && <div>Loading</div>}
-					<LineChart data={repo} />
-					{repo && <div>{JSON.stringify(repo, null, 2)}</div>}
+					{loadingFiles && <div>Loading</div>}
+					{files && Object.keys(files).map(file =>
+						<File path={file} data={files[file].data} loading={files[file].loading} key={file} />
+					)}
+					{/* <LineChart data={files} /> */}
+					{/* {files && <div>{JSON.stringify(files, null, 2)}</div>} */}
 				</div>
 			</div>
 		);
