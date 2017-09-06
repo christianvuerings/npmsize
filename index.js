@@ -103,6 +103,9 @@ app.get('/api/repo/:repo/files', (req, res) => {
 
 // https://registry.npmjs.org/gestalt
 
+// List public for the static assets
+app.use(express.static(path.join(__dirname, 'client/build')));
+
 var port = process.env.PORT || 5000;
 server.listen(port);
 server.on('listening', function() {
