@@ -1,8 +1,6 @@
 import React, { Component } from "react";
 import { BarChart } from "react-chartkick";
 
-const padding = 5;
-
 class Chart extends Component {
   static defaultProps = {
     data: []
@@ -22,8 +20,11 @@ class Chart extends Component {
 		const values = filteredData.map(el => el[1]);
 
 		// Calculate min + max for those values (layout purposes)
-		const min = Math.floor(Math.min(...values) - padding);
-		const max = Math.round(Math.max(...values) + padding);
+		const minValue = Math.min(...values);
+		const maxValue = Math.max(...values);
+
+		const min = minValue - minValue / 15 > 0 ? Math.floor(minValue - minValue / 15) : Math.floor(minValue);
+		const max = Math.round(maxValue + maxValue / 15);
 
 		const height = 100 + filteredData.length * 12;
 

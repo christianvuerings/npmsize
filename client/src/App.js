@@ -2,6 +2,21 @@ import React, { Component } from "react";
 import 'chart.js';
 import Chart from "./js/Chart";
 
+function debounce(func, wait, immediate) {
+	var timeout;
+	return function() {
+		var context = this, args = arguments;
+		var later = function() {
+			timeout = null;
+			if (!immediate) func.apply(context, args);
+		};
+		var callNow = immediate && !timeout;
+		clearTimeout(timeout);
+		timeout = setTimeout(later, wait);
+		if (callNow) func.apply(context, args);
+	};
+};
+
 class File extends Component {
 	render() {
 		const { path, loading, data } = this.props;
@@ -20,6 +35,13 @@ class File extends Component {
 class App extends Component {
 	// Initialize state
 	state = { loading: true, repo: "", searchInput: "gestalt" };
+
+	// constructor
+	constructor(props) {
+		super(props);
+
+		this.getFilesDebounce = debounce(this.getFiles, 1000);
+	}
 
 	// Fetch passwords after first mount
 	componentDidMount() {
@@ -52,6 +74,7 @@ class App extends Component {
 			fetch("/api/repo/" + searchInput + "/files")
 				.then(res => res.json())
 				.then(res => {
+
 					this.getFilesInfo(searchInput, res.lastVersion);
 
 					const files = {};
@@ -80,7 +103,7 @@ class App extends Component {
 		this.setState({
 			loadingFiles: true,
 			searchInput: value
-		}, this.getFiles);
+		}, this.getFilesDebounce);
 	}
 
 	render() {
