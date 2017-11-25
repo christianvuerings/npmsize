@@ -1,5 +1,6 @@
 import React, { Component } from "react";
-import LineChart from "./js/LineChart";
+import 'chart.js';
+import Chart from "./js/Chart";
 
 class File extends Component {
 	render() {
@@ -9,7 +10,7 @@ class File extends Component {
 			<div className="fileContainer">
 				<h2>{path}</h2>
 				{loading && <div>Loading</div>}
-				{!loading && data && <LineChart data={data} />}
+				{!loading && data && <Chart data={data} />}
 			</div>
 
 		)
@@ -51,8 +52,6 @@ class App extends Component {
 			fetch("/api/repo/" + searchInput + "/files")
 				.then(res => res.json())
 				.then(res => {
-					console.log(res);
-
 					this.getFilesInfo(searchInput, res.lastVersion);
 
 					const files = {};

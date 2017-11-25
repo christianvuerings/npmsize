@@ -11,6 +11,9 @@
     "express": "^4.15.3",
     "request": "^2.81.0"
   },
+  "engines": {
+    "node": "8.9.0"
+  },
   "scripts": {
     "start": "node index.js",
     "heroku-postbuild": "cd client && yarn --production=false && yarn run build"

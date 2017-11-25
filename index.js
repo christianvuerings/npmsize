@@ -8,24 +8,19 @@ var env = process.env.NODE_ENV || 'development';
 
 const defaultPackages = ['main', 'style', 'module', 'sass'];
 
-function cachingGet (get) {
-  const cache = new Map()
+const cache = new Map();
 
-  return function cachedGet (url) {
-    const key = url
+getFromCache = (key) => {
+	if (cache.has(key)) {
+		return cache.get(key);
+	}
+	return null;
+};
 
-    if (cache.has(key)) {
-      return cache.get(key)
-    } else {
-      const request = get(...arguments)
-      cache.set(key, request)
-      return request
-    }
-  }
-}
+setToCache = (key, value) => {
+	cache.set(key, value);
+};
 
-const cachingAxios = axios.create()
-cachingAxios.get = cachingGet(cachingAxios.get)
 
 /**
  * Make sure we only pass data over https
@@ -43,20 +38,28 @@ if (env === 'production') {
 }
 
 const getFilesizes = (repo, versions, path) => {
-	return versions.slice(-20).map(version => {
-		return cachingAxios.get('https://unpkg.com/' + repo + '@' + version + '/' + path)
-		.then(response => {
-			return {
-				version: version,
-				size: response.headers['content-length']
-			}
-		})
-		.catch(error => {
-			return {
-				version: version,
-				size: null
-			}
-		});
+	return versions.slice(-40).map(version => {
+
+		const url = 'https://unpkg.com/' + repo + '@' + version + '/' + path;
+
+		const fromCache = getFromCache(url);
+		if (fromCache) {
+			return fromCache;
+		} else {
+			return axios.get(url)
+				.then(response => {
+					const output = [
+						version, +((response.headers['content-length'] / 1000).toFixed(2))
+					];
+					setToCache(url, output);
+					return output;
+				})
+				.catch(error => {
+					const output = [version, null];
+					setToCache(url, output);
+					return output;
+				});
+		}
 	});
 }
 
@@ -65,10 +68,10 @@ app.get('/api/repo/:repo/path/', (req, res) => {
 	const repo = req.params.repo;
 	const path = req.query.path;
 	axios.get('https://registry.npmjs.org/' + repo).then(response => {
-		console.log(response);
+		// console.log(response);
 		var fileSizes = getFilesizes(repo, Object.keys(response.data.versions), path);
 
-		axios.all(fileSizes).then(data => {
+		Promise.all(fileSizes).then(data => {
 			res.send(data);
 		})
 	});
